@@ -23,6 +23,8 @@
 #ifndef UAE_MEMORY_H
 #define UAE_MEMORY_H
 
+#include "sysdeps.h"
+
 #if DIRECT_ADDRESSING
 extern uintptr MEMBaseDiff;
 #endif

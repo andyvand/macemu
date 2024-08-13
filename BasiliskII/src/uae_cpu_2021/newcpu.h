@@ -34,7 +34,7 @@
 #define NEWCPU_H
 
 #include "readcpu.h"
-#include "memory.h"
+#include "memory_uae.h"
 #include "sysdeps.h"
 #include "registers.h"
 #include "spcflags.h"

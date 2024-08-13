@@ -65,12 +65,16 @@ namespace widgets
 
 void defConfig()
 {
+#ifdef __ANDROID__
+    snprintf(prefsName, sizeof(prefsName), "/sdcard/Android/macemu_data/.basilisk_ii_prefs");
+#else
 	if (homeDir != NULL)
 	{
 		snprintf(prefsName, sizeof(prefsName), "%s/%s", homeDir, ".basilisk_ii_prefs");
 	} else {
 		snprintf(prefsName, sizeof(prefsName), ".basilisk_ii_prefs");
 	}
+#endif
 
 	for (int i=0; i<4; i++)
 		menuFileDisk[i]="";

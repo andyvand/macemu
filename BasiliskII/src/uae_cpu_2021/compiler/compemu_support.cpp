@@ -68,7 +68,7 @@
 #ifdef UAE
 #include "options.h"
 #include "events.h"
-#include "uae/memory.h"
+#include "uae/memory_uae.h"
 #include "custom.h"
 #else
 #include "cpu_emulation.h"
@@ -77,7 +77,7 @@
 #include "vm_alloc.h"
 
 #include "m68k.h"
-#include "memory.h"
+#include "memory_uae.h"
 #include "readcpu.h"
 #endif
 #include "newcpu.h"

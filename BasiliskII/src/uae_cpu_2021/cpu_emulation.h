@@ -30,7 +30,7 @@
  *  Memory system
  */
 
-#include "memory.h"
+#include "memory_uae.h"
 
 // RAM and ROM pointers (allocated and set by main_*.cpp)
 #if 0

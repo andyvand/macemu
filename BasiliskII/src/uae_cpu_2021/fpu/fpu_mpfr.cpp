@@ -24,7 +24,7 @@
 
 #include <cstdio>
 #include <cstdint>
-#include "memory.h"
+#include "memory_uae.h"
 #include "readcpu.h"
 #include "newcpu.h"
 #include "main.h"

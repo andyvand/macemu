@@ -144,7 +144,7 @@
 # include <cstdio>
 
 #include "sysdeps.h"
-#include "memory.h"
+#include "memory_uae.h"
 #include "readcpu.h"
 #include "newcpu.h"
 #define FPU_IMPLEMENTATION

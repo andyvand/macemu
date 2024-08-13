@@ -2919,10 +2919,10 @@ generate_includes (FILE * f)
 	fprintf (f, "#include \"sysdeps.h\"\n");
 #ifdef UAE
 	fprintf (f, "#include \"options.h\"\n");
-	fprintf (f, "#include \"uae/memory.h\"\n");
+	fprintf (f, "#include \"uae/memory_uae.h\"\n");
 #else
 	fprintf (f, "#include \"m68k.h\"\n");
-	fprintf (f, "#include \"memory.h\"\n");
+	fprintf (f, "#include \"memory_uae.h\"\n");
 #endif
 	fprintf (f, "#include \"readcpu.h\"\n");
 	fprintf (f, "#include \"newcpu.h\"\n");

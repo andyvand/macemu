@@ -4,7 +4,7 @@
     "type": "APK",
     "kind": "Directory"
   },
-  "applicationId": "org.SheepShaver.app",
+  "applicationId": "org.libsdl.app",
   "variantName": "release",
   "elements": [
     {
