@@ -69,7 +69,7 @@ namespace widgets
 void defConfig()
 {
 #ifdef ANDROIDSDL
-	snprintf(prefsName, sizeof(prefsName), "/sdcard/.sheepshaver_prefs");
+	snprintf(prefsName, sizeof(prefsName), "/sdcard/Android/.sheepshaver_prefs");
 #else
 	if (homeDir != NULL)
 	{

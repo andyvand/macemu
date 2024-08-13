@@ -41,6 +41,10 @@
 #include <string.h>
 #include "sigsegv.h"
 
+#ifdef __ANDROID__
+#define HAVE_SIGINFO_T 1
+#endif
+
 #ifndef NO_STD_NAMESPACE
 using std::list;
 #endif

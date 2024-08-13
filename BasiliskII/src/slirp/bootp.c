@@ -22,6 +22,7 @@
  * THE SOFTWARE.
  */
 #include <slirp.h>
+#include <memory.h>
 
 /* XXX: only DHCP is supported */
 

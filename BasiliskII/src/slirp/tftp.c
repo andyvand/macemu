@@ -23,6 +23,8 @@
  */
 
 #include <slirp.h>
+#include <memory.h>
+#include <string.h>
 
 struct tftp_session {
     int in_use;

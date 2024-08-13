@@ -94,6 +94,10 @@
 #include <signal.h>
 #include <string>
 
+#ifdef __ANDROID__
+#include <sys/shm.h>
+#endif
+
 #include "sysdeps.h"
 #include "main.h"
 #include "version.h"
@@ -155,6 +159,9 @@
 #include "mon.h"
 #endif
 
+#ifdef __ANDROID__
+#undef _POSIX_THREAD_PRIORITY_SCHEDULING
+#endif
 
 // Enable emulation of unaligned lmw/stmw?
 #define EMULATE_UNALIGNED_LOADSTORE_MULTIPLE 1
@@ -1180,14 +1187,18 @@ static void Quit(void)
 	// Stop 60Hz thread
 	if (tick_thread_active) {
 		tick_thread_cancel = true;
+#ifndef __ANDROID__
 		pthread_cancel(tick_thread);
+#endif
 		pthread_join(tick_thread, NULL);
 	}
 
 	// Stop NVRAM watchdog thread
 	if (nvram_thread_active) {
 		nvram_thread_cancel = true;
+#ifndef __ANDROID__
 		pthread_cancel(nvram_thread);
+#endif
 		pthread_join(nvram_thread, NULL);
 	}
 
@@ -1263,7 +1274,11 @@ static void Quit(void)
 			rpc_method_wait_for_reply(gui_connection, RPC_TYPE_INVALID);
 	}
 
-	exit(0);
+#ifdef __ANDROID__
+    pthread_exit(NULL);
+#endif
+
+    exit(0);
 }
 
 #if !defined(__APPLE__) || !defined(__x86_64__)

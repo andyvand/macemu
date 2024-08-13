@@ -35,6 +35,10 @@
 #include "config.h"
 #endif
 
+#ifdef __ANDROID__
+#define HAVE_SIGINFO_T 1
+#endif
+
 #include <list>
 #include <stdio.h>
 #include <signal.h>

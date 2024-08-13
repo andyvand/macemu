@@ -358,11 +358,11 @@ static inline int testandset(volatile int *p)
 }
 #endif
 
-#ifdef __arm__
+#if defined(__arm__) && !defined(__thumb__)
 #define HAVE_TEST_AND_SET 1
 static inline int testandset(volatile int *p)
 {
-	register unsigned int ret;
+    unsigned int ret;
 	__asm__ __volatile__("swp %0, %1, [%2]"
 						 : "=r"(ret)
 						 : "0"(1), "r"(p));

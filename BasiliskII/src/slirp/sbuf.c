@@ -7,6 +7,7 @@
 
 #include <stdlib.h>
 #include <slirp.h>
+#include <memory.h>
 
 /* Done as a macro in socket.h */
 /* int

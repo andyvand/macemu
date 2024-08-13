@@ -302,6 +302,7 @@ namespace widgets
 #if 0
 	tab_misc->add(group_modelid);
 #endif
+    tab_misc->add(checkBox_jit68k);
 	tab_misc->add(button_rom);
 	tab_misc->add(textField_rom);
   	tab_misc->add(backgrd_rammem);

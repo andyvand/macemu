@@ -172,8 +172,8 @@ void LoadPrefs(const char* vmdir)
 
 	// Load .basilisk_ii_prefs from $HOME if it exists
 #ifdef ANDROIDSDL
-    prefs_name = "/sdcard" + PREFS_FILE_NAME;
-    xpram_name = "/sdcard" + XPRAM_FILE_NAME;
+    prefs_name = string("/sdcard/Android/macemu_data") + PREFS_FILE_NAME;
+    xpram_name = string("/sdcard/Android/macemu_data") + XPRAM_FILE_NAME;
     if (load_prefs_file(prefs_name, false))
         return;
 #else

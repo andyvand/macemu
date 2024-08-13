@@ -40,6 +40,7 @@
 
 #include <stdlib.h>
 #include <slirp.h>
+#include <memory.h>
 #include "ip_icmp.h"
 
 struct socket tcb;

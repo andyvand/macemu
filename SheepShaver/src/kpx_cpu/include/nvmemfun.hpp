@@ -23,6 +23,11 @@
 
 #include <functional>
 
+#ifdef __ANDROID__
+#define unary_function __unary_function
+#define binary_function __binary_function
+#endif
+
 #ifdef __MINGW32__
 #include "vm_alloc.h"
 #endif

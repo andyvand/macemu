@@ -42,6 +42,7 @@
 #include <stddef.h>
 #include <stdbool.h>
 #include <sys/types.h>
+#include <memory.h>
 
 #define container_of(ptr, type, member) ({                      \
         const typeof(((type *) 0)->member) *__mptr = (ptr);     \

@@ -24,7 +24,7 @@
 #include <SDL2/SDL_ttf.h>
 #include <guisan/sdl.hpp>
 
-#if defined(__APPLE__) && defined(__MACH__)
+#if (defined(__APPLE__) && defined(__MACH__)) || defined(__ANDROID__)
 #include "../Unix/macos-bundle.h"
 
 char dataPath[2048];
@@ -44,8 +44,8 @@ char dataPath[2048];
 
 #if defined(ANDROID)
 #include <android/log.h>
-#include <SDL_screenkeyboard.h>
-#include <SDL_android.h>
+#include <SDL_keyboard.h>
+//#include <SDL_android.h>
 #endif
 
 #ifndef SDL_DEFAULT_REPEAT_DELAY
@@ -98,7 +98,7 @@ namespace sdl
      * Gui object that can be populated by various examples.
      */
     SDL_CreateWindowAndRenderer(640, 480, 0, &window, &renderer);
-    SDL_SetWindowTitle(window, "BasiliskII");
+    SDL_SetWindowTitle(window, "SheepShaver");
     SDL_SetWindowPosition(window, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED);
 
     // We want to enable key repeat
@@ -389,17 +389,27 @@ namespace widgets
 
 #ifdef USE_FREESANS_TTF
     TTF_Init();
-#if defined(__APPLE__) && defined(__MACH__)
+#if defined(__ANDROID__)
+    snprintf(dataPath, sizeof(dataPath), "%s/FreeSans.ttf", "/sdcard/Android/macemu_data");
+    font = new gcn::SDLTrueTypeFont(dataPath, 16);
+    memset(dataPath, 0, sizeof(dataPath));
+#elif defined(__APPLE__) && defined(__MACH__)
     snprintf(dataPath, sizeof(dataPath), "%s/FreeSans.ttf", getBundlePath());
     font = new gcn::SDLTrueTypeFont(dataPath, 16);
+    memset(dataPath, 0, sizeof(dataPath));
 #else
     font = new gcn::SDLTrueTypeFont("data/FreeSans.ttf", 16);
 #endif
     memset(dataPath, 0, sizeof(dataPath));
 #else
 #if defined(__APPLE__) && defined(__MACH__)
-    snprintf(dataPath, sizeof(dataPath), "%s/fixedfont.bmp", getBundlePath());
+    snprintf(dataPath, sizeof(dataPath), "%s/fixedfont.bmp", "/sdcard/Android/macemu_data");
     font = new gcn::ImageFont(dataPath, " abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789.-()[]+\'");
+    memset(dataPath, 0, sizeof(dataPath));
+#elif defined(__ANDROID__)
+    snprintf(dataPath, sizeof(dataPath), "%s/fixedfont.bmp", "/sdcard/Android/macemu_data");
+    font = new gcn::ImageFont(dataPath, " abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789.-()[]+\'");
+    memset(dataPath, 0, sizeof(dataPath));
 #else
     font = new gcn::ImageFont("data/fixedfont.bmp", " abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789.-()[]+\'");
     memset(dataPath, 0, sizeof(dataPath);
@@ -407,8 +417,16 @@ namespace widgets
 #endif
     gcn::Widget::setGlobalFont(font);
 
-
-#if defined(__APPLE__) && defined(__MACH__)
+#if defined(__ANDROID__)
+    snprintf(dataPath, sizeof(dataPath), "%s/background.jpg", "/sdcard/Android/macemu_data");
+    background_image = gcn::Image::load(dataPath);
+    background = new gcn::Icon(background_image);
+    memset(dataPath, 0, sizeof(dataPath));
+    snprintf(dataPath, sizeof(dataPath), "%s/background2.jpg", "/sdcard/Android/macemu_data");
+    background2_image = gcn::Image::load(dataPath);
+    background2 = new gcn::Icon(background2_image);
+    memset(dataPath, 0, sizeof(dataPath));
+#elif defined(__APPLE__) && defined(__MACH__)
     snprintf(dataPath, sizeof(dataPath), "%s/background.jpg", getBundlePath());
     background_image = gcn::Image::load(dataPath);
     background = new gcn::Icon(background_image);
@@ -545,7 +563,7 @@ namespace widgets
 
  int gui_open (void)
  {
-#ifdef ANDROID	  
+#if 0
   SDL_ANDROID_SetScreenKeyboardShown(0);
   fprintf(stderr, "guichan: Don't show keyboard\n");
   SDL_ANDROID_SetSystemMousePointerVisible(1);
@@ -569,7 +587,7 @@ namespace widgets
     fprintf(stderr, "guichan: SDL halt\n");
     SDL_JoystickClose (joy0);
     fprintf(stderr, "guichan: Close joystick\n");
-#ifdef ANDROID
+#if 0
   SDL_ANDROID_SetScreenKeyboardShown(1);
   fprintf(stderr, "guichan: Show keyboard\n");
   SDL_ANDROID_SetSystemMousePointerVisible(0);

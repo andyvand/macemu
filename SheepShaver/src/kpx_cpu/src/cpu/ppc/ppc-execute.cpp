@@ -20,6 +20,11 @@
 
 #include "sysdeps.h"
 
+#ifdef __ANDROID__
+#undef  register
+#define register
+#endif
+
 #include <stdio.h>
 #include <math.h>
 #include <time.h>
@@ -148,6 +153,7 @@ struct op_overflow<op_add> {
  *		OE		Predicate to compute the overflow flag
  *		Rc		Predicate to record CR0
  **/
+
 
 template< class RA, class RB, class RC, class CA, class OE, class Rc >
 void powerpc_cpu::execute_addition(uint32 opcode)

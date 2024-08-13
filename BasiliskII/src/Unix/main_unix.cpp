@@ -97,6 +97,10 @@ using std::string;
 #include "sigsegv.h"
 #include "rpc.h"
 
+#ifdef __ANDROID__
+#undef _POSIX_THREAD_PRIORITY_SCHEDULING
+#endif
+
 #if USE_JIT
 #ifdef UPDATE_UAE
 extern void (*flush_icache)(void); // from compemu_support.cpp

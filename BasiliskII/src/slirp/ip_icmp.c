@@ -32,6 +32,8 @@
 
 #include "slirp.h"
 #include "ip_icmp.h"
+#include <memory.h>
+#include <string.h>
 
 struct icmpstat icmpstat;
 

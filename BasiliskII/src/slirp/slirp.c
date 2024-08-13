@@ -1,4 +1,6 @@
 #include "slirp.h"
+#include <memory.h>
+
 #ifdef __MINGW32__
 #include <winerror.h>
 #endif

@@ -39,6 +39,7 @@
  */
 
 #include <slirp.h>
+#include <memory.h>
 
 /*
  * Since this is only used in "stats socket", we give meaning
