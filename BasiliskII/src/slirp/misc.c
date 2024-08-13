@@ -163,16 +163,23 @@ add_exec(ex_ptr, do_pty, exec, addr, port)
  * For systems with no strerror
  */
 
+#ifndef __ANDROID__
 extern int sys_nerr;
+#endif
+
 extern char *sys_errlist[];
 
 char *
 strerror(error)
 	int error;
 {
+#ifdef __ANDROID__
+    (void)error;
+#else
 	if (error < sys_nerr)
 	   return sys_errlist[error];
 	else
+#endif
 	   return "Unknown error.";
 }
 

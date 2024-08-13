@@ -51,6 +51,12 @@ extern "C" {
 }
 
 
+#if defined(__APPLE__) && defined(__MACH__)
+#ifndef HAVE_CFMAKERAW
+#define HAVE_CFMAKERAW 1
+#endif
+#endif
+
 #define DEBUG 0
 #include "debug.h"
 
@@ -93,7 +99,11 @@ public:
 		pid = 0;
 		input_thread_active = output_thread_active = false;
 
+#if defined(__ANDROID__) || (defined(__MACH__) && defined(__APPLE__))
+        pthread_attr_init(&thread_attr);
+#else
 		Set_pthread_attr(&thread_attr, 2);
+#endif
 	}
 
 	virtual ~XSERDPort()

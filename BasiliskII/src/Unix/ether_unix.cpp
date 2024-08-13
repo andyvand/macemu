@@ -51,6 +51,10 @@
 
 #ifdef __APPLE__
 #include <net/if_dl.h>
+
+#ifdef __MACH__
+#include <arpa/inet.h>
+#endif
 #endif
 
 #ifdef __linux__
@@ -196,7 +200,12 @@ static bool start_thread(void)
 		return false;
 	}
 
+#if defined(__ANDROID__) || (defined(__APPLE__) && defined(__MACH__))
+    pthread_attr_init(&ether_thread_attr);
+#else
 	Set_pthread_attr(&ether_thread_attr, 1);
+#endif
+
 	thread_active = (pthread_create(&ether_thread, &ether_thread_attr, receive_func, NULL) == 0);
 	if (!thread_active) {
 		printf("WARNING: Cannot start Ethernet thread");
@@ -337,7 +346,7 @@ bool ether_init(void)
 	// Initialize slirp library
 	if (net_if_type == NET_IF_SLIRP) {
 		if (slirp_init() < 0) {
-			sprintf(str, "%s", GetString(STR_SLIRP_NO_DNS_FOUND_WARN));
+			snprintf(str, sizeof(str), "%s", GetString(STR_SLIRP_NO_DNS_FOUND_WARN));
 			WarningAlert(str);
 			return false;
 		}
@@ -362,13 +371,13 @@ bool ether_init(void)
 	char dev_name[16];
 	switch (net_if_type) {
 	case NET_IF_ETHERTAP:
-		sprintf(dev_name, "/dev/%s", name);
+		snprintf(dev_name, sizeof(dev_name), "/dev/%s", name);
 		break;
 	case NET_IF_TUNTAP:
-		strcpy(dev_name, "/dev/net/tun");
+		strncpy(dev_name, "/dev/net/tun", sizeof(dev_name));
 		break;
 	case NET_IF_SHEEPNET:
-		strcpy(dev_name, "/dev/sheep_net");
+		strncpy(dev_name, "/dev/sheep_net", sizeof(dev_name));
 		break;
 #ifdef ENABLE_MACOSX_ETHERHELPER
 	case NET_IF_ETHERHELPER: {
@@ -421,7 +430,7 @@ bool ether_init(void)
 	if (net_if_type != NET_IF_SLIRP && net_if_type != NET_IF_VDE) {
 		fd = open(dev_name, O_RDWR);
 		if (fd < 0) {
-			sprintf(str, GetString(STR_NO_SHEEP_NET_DRIVER_WARN), dev_name, strerror(errno));
+			snprintf(str, sizeof(str), GetString(STR_NO_SHEEP_NET_DRIVER_WARN), dev_name, strerror(errno));
 			WarningAlert(str);
 			goto open_error;
 		}
@@ -433,9 +442,9 @@ bool ether_init(void)
 		struct ifreq ifr;
 		memset(&ifr, 0, sizeof(ifr));
 		ifr.ifr_flags = IFF_TAP | IFF_NO_PI;
-		strcpy(ifr.ifr_name, "tun%d");
+		strncpy(ifr.ifr_name, "tun%d", sizeof(ifr.ifr_name));
 		if (ioctl(fd, TUNSETIFF, (void *) &ifr) != 0) {
-			sprintf(str, GetString(STR_SHEEP_NET_ATTACH_WARN), strerror(errno));
+			snprintf(str, sizeof(str), GetString(STR_SHEEP_NET_ATTACH_WARN), strerror(errno));
 			WarningAlert(str);
 			goto open_error;
 		}
@@ -447,13 +456,13 @@ bool ether_init(void)
 
 		// Start network script up
 		if (net_if_script == NULL) {
-			sprintf(str, GetString(STR_TUN_TAP_CONFIG_WARN), "script not found");
+			snprintf(str, sizeof(str), GetString(STR_TUN_TAP_CONFIG_WARN), "script not found");
 			WarningAlert(str);
 			goto open_error;
 		}
 		net_if_name = strdup(ifr.ifr_name);
 		if (!execute_network_script("up")) {
-			sprintf(str, GetString(STR_TUN_TAP_CONFIG_WARN), "script execute error");
+			snprintf(str, sizeof(str), GetString(STR_TUN_TAP_CONFIG_WARN), "script execute error");
 			WarningAlert(str);
 			goto open_error;
 		}
@@ -464,7 +473,7 @@ bool ether_init(void)
 #if defined(__linux__)
 	// Attach sheep_net to selected Ethernet card
 	if (net_if_type == NET_IF_SHEEPNET && ioctl(fd, SIOCSIFLINK, name) < 0) {
-		sprintf(str, GetString(STR_SHEEP_NET_ATTACH_WARN), strerror(errno));
+		snprintf(str, sizeof(str), GetString(STR_SHEEP_NET_ATTACH_WARN), strerror(errno));
 		WarningAlert(str);
 		goto open_error;
 	}
@@ -474,14 +483,14 @@ bool ether_init(void)
 #ifdef USE_FIONBIO
 	int nonblock = 1;
 	if (ioctl(fd, FIONBIO, &nonblock) < 0) {
-		sprintf(str, GetString(STR_BLOCKING_NET_SOCKET_WARN), strerror(errno));
+		snprintf(str, sizeof(str), GetString(STR_BLOCKING_NET_SOCKET_WARN), strerror(errno));
 		WarningAlert(str);
 		goto open_error;
 	}
 #else
 	val = fcntl(fd, F_GETFL, 0);
 	if (val < 0 || fcntl(fd, F_SETFL, val | O_NONBLOCK) < 0) {
-		sprintf(str, GetString(STR_BLOCKING_NET_SOCKET_WARN), strerror(errno));
+		snprintf(str, sizeof(str), GetString(STR_BLOCKING_NET_SOCKET_WARN), strerror(errno));
 		WarningAlert(str);
 		goto open_error;
 	}
@@ -1229,14 +1238,14 @@ static int slirp_add_redir(const char *redir_str)
 	}
 
 	if (slirp_redir(is_udp, host_port, guest_addr, guest_port) < 0) {
-		sprintf(str, "could not set up host forwarding rule '%s'", redir_str);
+		snprintf(str, sizeof(str), "could not set up host forwarding rule '%s'", redir_str);
 		WarningAlert(str);
 		return -1;
 	}
 	return 0;
 
  fail_syntax:
-	sprintf(str, "invalid host forwarding rule '%s'", redir_str);
+	snprintf(str, sizeof(str), "invalid host forwarding rule '%s'", redir_str);
 	WarningAlert(str);
 	return -1;
 }

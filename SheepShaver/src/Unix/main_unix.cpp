@@ -752,8 +752,29 @@ static bool init_sdl()
 }
 #endif
 
+unsigned char SDL_ANDROID_CompatibilityHacks = 0;
+
+#ifdef GUICHAN_GUI
+extern int gui_open (void);
+#endif
+
 int main(int argc, char **argv)
 {
+#ifdef GUICHAN_GUI
+    /* Emulator itself forgets SDL_FLip, so we need to enable
+       compatibility hack for it. But GUI does SDL_Flip properly.
+       When in GUI both SDL_Flip's conflict resulting in black screen
+       on some devices.
+    */
+#ifdef ANDROIDSDL
+    SDL_ANDROID_CompatibilityHacks = 0;
+#endif
+    int err=gui_open();
+#ifdef ANDROIDSDL
+    SDL_ANDROID_CompatibilityHacks = 1;
+#endif
+#endif
+
 #if defined(ENABLE_GTK) && !defined(GDK_WINDOWING_QUARTZ) && !defined(GDK_WINDOWING_WAYLAND)
 	XInitThreads();
 #endif

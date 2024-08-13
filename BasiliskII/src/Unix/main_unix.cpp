@@ -121,6 +121,7 @@ const int SIG_STACK_SIZE = SIGSTKSZ;	// Size of signal stack
 #endif
 const int SCRATCH_MEM_SIZE = 0x10000;	// Size of scratch memory area
 
+extern bool running;
 
 #if !EMULATED_68K
 // RAM and ROM pointers
@@ -414,8 +415,29 @@ static void usage(const char *prg_name)
 	exit(0);
 }
 
+unsigned char SDL_ANDROID_CompatibilityHacks = 0;
+
+#ifdef GUICHAN_GUI
+extern int gui_open (void);
+#endif
+
 int main(int argc, char **argv)
 {
+#ifdef GUICHAN_GUI
+	/* Emulator itself forgets SDL_FLip, so we need to enable
+	   compatibility hack for it. But GUI does SDL_Flip properly.
+	   When in GUI both SDL_Flip's conflict resulting in black screen
+	   on some devices.
+	*/
+#ifdef ANDROIDSDL
+	SDL_ANDROID_CompatibilityHacks = 0;
+#endif
+	int err=gui_open();
+#ifdef ANDROIDSDL
+	SDL_ANDROID_CompatibilityHacks = 1;
+#endif
+#endif
+
 #if defined(ENABLE_GTK) && !defined(GDK_WINDOWING_QUARTZ) && !defined(GDK_WINDOWING_WAYLAND)
 	XInitThreads();
 #endif
@@ -705,6 +727,7 @@ int main(int argc, char **argv)
 
 	// Load Mac ROM
 	int rom_fd = open(rom_path ? rom_path : ROM_FILE_NAME, O_RDONLY);
+    fprintf(stderr, "ROM Path: %s\n", rom_path);
 	if (rom_fd < 0) {
 		ErrorAlert(STR_NO_ROM_FILE_ERR);
 		QuitEmulator();
@@ -870,7 +893,7 @@ int main(int argc, char **argv)
 #if !EMULATED_68K
 	sigaddset(&timer_sa.sa_mask, SIG_IRQ);
 #endif
-	timer_sa.sa_handler = one_tick;
+	timer_sa.sa_handler = (void (*)(int))one_tick;
 	timer_sa.sa_flags = SA_ONSTACK | SA_RESTART;
 	if (sigaction(SIGALRM, &timer_sa, NULL) < 0) {
 		sprintf(str, GetString(STR_SIG_INSTALL_ERR), "SIGALRM", strerror(errno));
@@ -1267,8 +1290,9 @@ static void one_tick(...)
 	}
 }
 
+bool tick_inhibit = false;
+
 #ifdef USE_PTHREADS_SERVICES
-bool tick_inhibit;
 static void *tick_func(void *arg)
 {
 	uint64 start = GetTicks_usec();

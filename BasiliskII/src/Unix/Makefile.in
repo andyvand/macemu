@@ -22,9 +22,9 @@ CXXFLAGS = @CXXFLAGS@
 CPUINCLUDES_FLAGS=@CPUINCLUDES@
 CPUINCLUDES_FLAGS:=$(CPUINCLUDES_FLAGS:-I%=-I@top_srcdir@/%)
 CPPFLAGS = @CPPFLAGS@ -I@top_srcdir@/../include -I@top_srcdir@/. -I. -I@top_srcdir@/../CrossPlatform $(CPUINCLUDES_FLAGS) -I@top_srcdir@/../slirp
-DEFS = @DEFS@ @DEFINES@ -D_REENTRANT -DDATADIR=\"$(datadir)/$(APP)\"
+DEFS = @DEFS@ @DEFINES@ -DGUICHAN_GUI -DANDROIDSDL -D_REENTRANT -DDATADIR=\"$(datadir)/$(APP)\"
 LDFLAGS = @LDFLAGS@
-LIBS = @LIBS@
+LIBS = @LIBS@ -lguisan -lSDL2_ttf -lSDL2_image
 SYSSRCS = @SYSSRCS@
 CPUSRCS = @CPUSRCS@
 BLESS = @BLESS@
@@ -45,6 +45,9 @@ GUI_LIBS = @GUI_LIBS@
 GUI_SRCS = ../prefs.cpp prefs_unix.cpp prefs_editor_gtk.cpp ../prefs_items.cpp \
 	../user_strings.cpp user_strings_unix.cpp xpram_unix.cpp sys_unix.cpp rpc_unix.cpp
 
+GUICHAN_SRCS = ../guisan/guichan-gui.cpp ../guisan/menuLoad_guichan.cpp ../guisan/menuTabDisplaySound.cpp  \
+	../guisan/menuTabMisc.cpp ../guisan/menuTabVolumes.cpp ../guisan/menuTabNetwork.cpp ../guisan/rw_config.cpp
+
 XPLAT_SRCS = ../CrossPlatform/vm_alloc.cpp ../CrossPlatform/sigsegv.cpp ../CrossPlatform/video_blit.cpp
 
 ## Files
@@ -56,7 +59,7 @@ SRCS = ../main.cpp ../prefs.cpp ../prefs_items.cpp \
     ../audio.cpp ../extfs.cpp disk_sparsebundle.cpp \
 	tinyxml2.cpp \
     ../user_strings.cpp user_strings_unix.cpp sshpty.c strlcpy.c rpc_unix.cpp \
-    $(XPLAT_SRCS) $(SYSSRCS) $(CPUSRCS) $(SLIRP_SRCS)
+    $(XPLAT_SRCS) $(SYSSRCS) $(CPUSRCS) $(SLIRP_SRCS) $(GUICHAN_SRCS)
 APP_FLAVOR ?=
 ifneq ($(APP_FLAVOR),)
 	CURR_APP_FLAVOR := -$(APP_FLAVOR)
@@ -74,6 +77,7 @@ GUI_APP_APP = $(GUI_APP).app
 PROGS += $(GUI_APP)$(EXEEXT)
 else
 CXXFLAGS += $(GUI_CFLAGS)
+LIBS += $(GUI_LIBS)
 endif
 
 ## Rules
@@ -112,7 +116,7 @@ VPATH += $(addprefix :, $(subst  ,:, $(filter-out $($(subst, :, ,$(VPATH))), $(S
 OSX_DOCS = ../MacOSX/Credits.html ../MacOSX/ToDo.html ../MacOSX/HowTo.html ../MacOSX/Versions.html
 
 $(APP)$(EXEEXT): $(OBJ_DIR) $(OBJS)
-	$(CXX) -o $@ $(LDFLAGS) $(OBJS) $(LIBS) $(GUI_LIBS)
+	$(CXX) -o $@ $(LDFLAGS) $(OBJS) $(LIBS) $(GUI_LIBS) $(GUI_LIBS)
 	$(BLESS) $(APP)$(EXEEXT)
 
 $(GUI_APP)$(EXEEXT): $(OBJ_DIR) $(GUI_OBJS)
@@ -202,6 +206,10 @@ $(OBJ_DIR)/%.o : %.s
 	$(CC) $(CPPFLAGS) $(DEFS) $(CFLAGS) -c $< -o $@
 $(OBJ_DIR)/%.guio : %.cpp
 	$(CXX) $(CPPFLAGS) $(DEFS) $(CXXFLAGS) $(GUI_CFLAGS) -DSTANDALONE_GUI -c $< -o $@
+$(OBJ_DIR)/%.geno : %.c
+	$(HOSTCC) $(CPPFLAGS) $(DEFS) -c $< -o $@
+$(OBJ_DIR)/%.geno : %.cpp
+	$(HOSTCXX) $(CPPFLAGS) $(DEFS) -c $< -o $@
 
 # Windows resources
 $(OBJ_DIR)/%.o: %.rc

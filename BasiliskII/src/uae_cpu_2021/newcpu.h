@@ -33,11 +33,12 @@
 #ifndef NEWCPU_H
 #define NEWCPU_H
 
+#include "readcpu.h"
+#include "memory.h"
 #include "sysdeps.h"
 #include "registers.h"
 #include "spcflags.h"
 #include "m68k.h"
-#include "memory.h"
 
 # include <csetjmp>
 

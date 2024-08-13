@@ -171,6 +171,12 @@ void LoadPrefs(const char* vmdir)
 	}
 
 	// Load .basilisk_ii_prefs from $HOME if it exists
+#ifdef ANDROIDSDL
+    prefs_name = "/sdcard" + PREFS_FILE_NAME;
+    xpram_name = "/sdcard" + XPRAM_FILE_NAME;
+    if (load_prefs_file(prefs_name, false))
+        return;
+#else
 	if (!home_dir.empty())
 	{
 		prefs_name = home_dir + PREFS_FILE_NAME;
@@ -187,6 +193,7 @@ void LoadPrefs(const char* vmdir)
 		if (load_prefs_file(prefs_name, false))
 			return;
 	}
+#endif
 
 	// No prefs file, save defaults in $XDG_CONFIG_HOME directory
 //#ifdef __linux__

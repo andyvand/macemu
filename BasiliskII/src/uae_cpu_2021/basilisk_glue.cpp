@@ -20,6 +20,8 @@
 
 #include "sysdeps.h"
 
+#include "compiler/compemu.h"
+#include "fpu/types.h"
 #include "cpu_emulation.h"
 #include "main.h"
 #include "prefs.h"
@@ -27,11 +29,13 @@
 #include "rom_patches.h"
 #include "timer.h"
 #include "m68k.h"
-#include "memory.h"
 #include "readcpu.h"
 #include "newcpu.h"
-#include "compiler/compemu.h"
+#include "memory.h"
 
+#ifndef USE_JIT
+#define USE_JIT 0
+#endif
 
 // RAM and ROM pointers
 uint32 RAMBaseMac = 0;		// RAM base (Mac address space) gb-- initializer is important

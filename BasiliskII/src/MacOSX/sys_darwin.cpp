@@ -38,6 +38,8 @@
 #import <IOKit/storage/IOCDMediaBSDClient.h>
 #import <CoreFoundation/CoreFoundation.h>
 
+#include <pthread.h>
+
 #include "sysdeps.h"
 
 #include "sys.h"

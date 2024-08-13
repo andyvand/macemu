@@ -30,11 +30,7 @@
  *  Memory system
  */
 
-#if 0
-#include "sysdeps.h"
 #include "memory.h"
-#include "tools.h"
-#endif
 
 // RAM and ROM pointers (allocated and set by main_*.cpp)
 #if 0
